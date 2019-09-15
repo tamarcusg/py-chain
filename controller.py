@@ -16,7 +16,7 @@ nodeNames = {
 
 app = Flask(__name__)
 list_identified = str(uuid4()).replace('-', '')
-blockchain = Blockchain()
+blockchain = Blockchain("Anirudh")
 nodes = Nodes()
     
 @app.route('/transactions/new/breed', methods=['POST'])
