@@ -10,7 +10,7 @@ from nodes import Nodes
 
 nodeNames = {
   'Anirudh': 'http://192.168.0.23:5000',
-  'Martin': 'http://192.168.0.9:5001',
+  # 'Martin': 'http://192.168.0.9:5001',
   'Tamarcus': 'http://192.168.0.29:5002'
 }
 
@@ -125,7 +125,15 @@ def add_transaction():
 
 @app.route('/resolveChain')
 def resolve_chain(address):
-    response = requests.get(address + '/getChain').json()
+    person = ''
+    if address == '192.168.0.29':
+        person = 'Tamarcus'
+    if address == '192.168.0.23':
+        person = 'Anirudh'
+    if address == '192.168.0.9':
+        person = 'Martin'
+    destination = nodeNames[person]
+    response = requests.get(destination + '/getChain').json()
     foreign_chain = response["Full Chain"]
     if len(foreign_chain) > len(blockchain.chain):
         blockchain.chain = foreign_chain
@@ -134,5 +142,6 @@ def resolve_chain(address):
 
 @app.route('/chainUpdated')
 def call_resolve_chain():
-    resolve_chain(request.remote_addr)
+    address = request.remote_addr
+    resolve_chain(address)
     return jsonify("Received Chain Update Notification...Will Resolve"), 200
