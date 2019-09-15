@@ -124,8 +124,7 @@ def add_transaction():
 
 
 @app.route('/resolveChain')
-def resolve_chain():
-    address = request.remote_addr
+def resolve_chain(address):
     response = requests.get(address + '/getChain').json()
     foreign_chain = response["Full Chain"]
     if len(foreign_chain) > len(blockchain.chain):
@@ -135,5 +134,5 @@ def resolve_chain():
 
 @app.route('/chainUpdated')
 def call_resolve_chain():
-    resolve_chain()
+    resolve_chain(request.remote_addr)
     return jsonify("Received Chain Update Notification...Will Resolve"), 200
