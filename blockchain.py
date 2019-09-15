@@ -8,13 +8,18 @@ from uuid import uuid4
 
 class Blockchain:
 
-    def __init__(self):
+    def __init__(self, name):
+        self.name = name
         self.chain = []
         self.current_transactions = []
+        # self.nodes = set()
 
-        self.new_block(previous_hash='1')
+        self.add_new_block(previous_hash='1')
 
-    def new_block(self, previous_hash):
+    def add_transaction(self, transaction):
+        self.current_transactions.append(transaction)
+
+    def add_new_block(self, previous_hash):
         block = OrderedDict()
         block['index'] = len(self.chain) + 1
         block['transactions'] = self.current_transactions

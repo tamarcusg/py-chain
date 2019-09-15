@@ -8,6 +8,12 @@ from uuid import uuid4
 from blockchain import Blockchain
 from nodes import Nodes
 
+nodeNames = {
+  'Anirudh': 'http://192.168.0.23:5000',
+  # 'Martin': 'http://192.168.0.9:5001'
+  'Tamarcus': 'http://192.168.0.29:5002'
+}
+
 app = Flask(__name__)
 list_identified = str(uuid4()).replace('-', '')
 blockchain = Blockchain()
@@ -55,7 +61,7 @@ def mine() :
     #proof = blockchain.proof_of_work(last_block)
       
     previous_hash = blockchain.hash(last_block)
-    block = blockchain.new_block(previous_hash)
+    block = blockchain.add_new_block(previous_hash)
       
     response = {
       'message' : 'New Block Forged',
@@ -74,3 +80,55 @@ def full_chain() :
       'length' : len(blockchain.chain)
     }
     return jsonify(response), 200
+
+
+@app.route('/')
+def hello_world():
+    address = request.remote_addr
+    person = ''
+    if (address=='192.168.0.29'):
+        person = 'Tamarcus'
+    response = 'Welcome to the Chain ' + person
+    return response
+
+
+@app.route('/getChain')
+def get_chain():
+    response = {"Full Chain" : blockchain.chain}
+    return jsonify(response), 200
+
+
+@app.route('/addBlock')
+def add_block():
+    blockchain.add_new_block(blockchain.hash(blockchain.last_block))
+    for node, address in nodeNames.items():
+        if (node==blockchain.name):
+            continue
+        requests.get(address + '/chainUpdated')
+    response = {"Block Added" : blockchain.last_block}
+    return jsonify(response), 200
+
+
+@app.route('/addTransaction')
+def add_transaction():
+    blockchain.add_transaction("Testing 123")
+    if (len(blockchain.current_transactions) == 3):
+        add_block()
+        blockchain.current_transactions = []
+    response = "Added Transaction"
+    return jsonify(response), 200
+
+
+@app.route('/resolveChain')
+def resolve_chain():
+    response = requests.get('http://192.168.0.23:5000/getChain').json()
+    foreign_chain = response["Full Chain"]
+    if len(foreign_chain) > len(blockchain.chain):
+        blockchain.chain = foreign_chain
+    return jsonify("Foreign Chain is Longer, Updating Local Chain..."), 200
+
+
+@app.route('/chainUpdated')
+def call_resolve_chain():
+    resolve_chain()
+    return jsonify("Received Chain Update Notification...Will Resolve"), 200

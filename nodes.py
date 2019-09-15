@@ -6,11 +6,11 @@ node_limit = 10
 
 node_clusters = []
 
-clusterA = {
+clusterA = [
     "http://192.168.0.23:5000", #Ani
     "http://192.168.0.23:5001", #Martin
     "http://192.168.0.23:5002"  #Tamarcus
-}
+]
 
 node_clusters.append(clusterA)
 
