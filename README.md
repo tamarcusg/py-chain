@@ -1,4 +1,4 @@
 # pyChain
 Block Chain -> Game
 
-Martin is a fool
+Martin is a romantic fool
