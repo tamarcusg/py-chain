@@ -10,7 +10,7 @@ from nodes import Nodes
 
 nodeNames = {
   'Anirudh': 'http://192.168.0.23:5000',
-  # 'Martin': 'http://192.168.0.9:5001'
+  'Martin': 'http://192.168.0.9:5001',
   'Tamarcus': 'http://192.168.0.29:5002'
 }
 
@@ -86,8 +86,12 @@ def full_chain() :
 def hello_world():
     address = request.remote_addr
     person = ''
-    if (address=='192.168.0.29'):
+    if address == '192.168.0.29':
         person = 'Tamarcus'
+    if address == '192.168.0.23':
+        person = 'Anirudh'
+    if address == '192.168.0.9':
+        person = 'Martin'
     response = 'Welcome to the Chain ' + person
     return response
 
@@ -121,7 +125,8 @@ def add_transaction():
 
 @app.route('/resolveChain')
 def resolve_chain():
-    response = requests.get('http://192.168.0.23:5000/getChain').json()
+    address = request.remote_addr
+    response = requests.get(address + '/getChain').json()
     foreign_chain = response["Full Chain"]
     if len(foreign_chain) > len(blockchain.chain):
         blockchain.chain = foreign_chain
